@@ -49,14 +49,18 @@ public class LogReaderStartup implements ServletContextListener {
      * @param arg0 The servlet context event at destruction.
      */
     public void contextDestroyed(ServletContextEvent event)  { 
-    	stop();
-    }
-    
-    public static void stop() {
+    	stopFileWriter();
     	logReaderStarter.shutdownNow();
-    	fileWriterStarter.shutdownNow();
     	try {
 			logReaderStarter.awaitTermination(10, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    public static void stopFileWriter() {
+    	fileWriterStarter.shutdownNow();
+    	try {
 			fileWriterStarter.awaitTermination(10, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -68,14 +72,14 @@ public class LogReaderStartup implements ServletContextListener {
      * @param arg0 The servlet context event at initialization.
      */
     public void contextInitialized(ServletContextEvent event)  {
-    	start();
-    }
-    
-    public static void start() {
+    	startFileWriter();
     	logReaderStarter = Executors.newSingleThreadScheduledExecutor();
-    	fileWriterStarter = Executors.newSingleThreadScheduledExecutor();
 		BasicConfigurator.configure();
     	logReaderStarter.schedule(new LogReaderDaemon(), 10, TimeUnit.SECONDS);
+    }
+    
+    public static void startFileWriter() {
+    	fileWriterStarter = Executors.newSingleThreadScheduledExecutor();
     	fileWriterStarter.schedule(new FileWriterDaemon(), 10, TimeUnit.SECONDS);
     }
     
