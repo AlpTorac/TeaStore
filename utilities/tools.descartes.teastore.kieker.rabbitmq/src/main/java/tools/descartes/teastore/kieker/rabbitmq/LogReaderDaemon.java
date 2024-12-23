@@ -32,8 +32,7 @@ public class LogReaderDaemon implements Runnable {
         final LogConsumer consumer = new LogConsumer(new Configuration(), analysisInstance);
  
         try {
-            analysisInstance.connect(reader, AmqpReader.OUTPUT_PORT_NAME_RECORDS, consumer,
-                    LogConsumer.INPUT_PORT_NAME);
+            analysisInstance.connect(reader, AmqpReader.OUTPUT_PORT_NAME_RECORDS, consumer, LogConsumer.INPUT_PORT_NAME);
             analysisInstance.run();
         } catch (final AnalysisConfigurationException e) {
             final StringWriter sw = new StringWriter();
